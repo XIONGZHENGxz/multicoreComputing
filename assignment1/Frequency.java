@@ -12,16 +12,11 @@ class FreqCallable implements Callable<Integer>{
 		this.end=e;
 	}
 	public Integer call(){
-		try{
-			int count=0;
-			for(int j=start;j<=end;j++){
-				if(a[j]==x) count++;
-			}
-			return count;
-		}catch(Exception e){
-			e.printStackTrace();
-			return -1;
+		int count=0;
+		for(int j=start;j<=end;j++){
+			if(a[j]==x) count++;
 		}
+		return count;
 	}
 }
 
@@ -36,10 +31,11 @@ public class Frequency{
 			Future<Integer> future=pool.submit(fc);
 			ans+=future.get();
 		}
-		int last=A.length-(l+1)*(numOfThreads-1);
+		int last=l*(numOfThreads-1)+1;
 		Callable<Integer> fc=new FreqCallable(x,last,A.length-1,A);
 		Future<Integer> future=pool.submit(fc);
 		ans+=future.get();
+		pool.shutdown();
 		}catch(Exception e){
 			System.err.println(e);
 		}
@@ -49,8 +45,10 @@ public class Frequency{
 	public static void main(String...args){
 		int x=1;
 		int[] a=new int[]{1,1,2,2,3,1,3,1,4,5,1,5};
-		int numOfThreads=3;
+		int numOfThreads=Integer.parseInt(args[0]);
 		Frequency f=new Frequency();
+		
 		System.out.println(f.parallelFreq(x,a,numOfThreads));
+
 	}
 }
